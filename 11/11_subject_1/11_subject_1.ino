@@ -9,8 +9,8 @@
 // configurable parameters
 #define SND_VEL 346.0 // sound velocity at 24 celsius degree (unit: m/s)
 #define INTERVAL 25 // sampling interval (unit: ms)
-#define _DIST_MIN 100 // minimum distance to be measured (unit: mm)
-#define _DIST_MAX 300 // maximum distance to be measured (unit: mm)
+#define _DIST_MIN 180 // minimum distance to be measured (unit: mm)
+#define _DIST_MAX 360 // maximum distance to be measured (unit: mm)
 
 #define _DUTY_MIN 550 // servo full clockwise position (0 degree)
 #define _DUTY_NEU (_DUTY_MIN+_DUTY_MAX) / 2 // servo neutral position (90 degree)
@@ -57,6 +57,7 @@ void loop() {
 
 // get a distance reading from the USS
   dist_raw = USS_measure(PIN_TRIG,PIN_ECHO);
+  dist_ema = alpha * dist_raw + (1 - alpha) * dist_ema;
 
 // output the read value to the serial port
   Serial.print("Min:100,raw:");
@@ -68,7 +69,8 @@ void loop() {
   Serial.println(",Max:400");
 
 // adjust servo position according to the USS read value
-  myservo.writeMicroseconds(map(dist_ema, 180, 360, _DIST_MIN, _DIST_MAX));
+  if (dist_ema >= 180 && dist_ema <= 360)
+    myservo.writeMicroseconds(map(dist_ema, _DIST_MIN, _DIST_MAX, _DUTY_MIN, _DUTY_MAX));
    
 // update last sampling time
   last_sampling_time += INTERVAL;
