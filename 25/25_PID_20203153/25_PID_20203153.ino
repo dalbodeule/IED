@@ -22,7 +22,7 @@
 #define _DUTY_MAX 1810                // [3169] 서보의 최대 가동 각도(180º)
 
 // Servo speed control
-#define _SERVO_ANGLE 60   //[3159] 서보의 각도(30º)
+#define _SERVO_ANGLE 70   //[3159] 서보의 각도(30º)
 //[3150] 레일플레이트가 사용자가 원하는 가동범위를 움직일때, 이를 움직이게 하는 서보모터의 가동범위
 #define _SERVO_SPEED 100             //[3147]  서보 속도를 30으로 설정
 
@@ -32,9 +32,10 @@
 #define _INTERVAL_SERIAL 100  // [3151] 시리얼 0.1초 마다 업데이트
 
 // PID parameters
-#define _KP 1.60       // [3158] 비례상수 설정
+#define _KP 1.50       // [3158] 비례상수 설정
 #define _KD 50         // 미분상수
-#define _KI 0.04       // 적분상수
+#define _KI 0.02       // 적분상수
+#define _ITERM_MAX 100  // ITerm 최대값
 
 //////////////////////
 // global variables //
@@ -133,7 +134,7 @@ unsigned long time_curr = millis();
     // I control
     iterm += _KI * error_curr;
 
-    if (iterm > 150 || iterm < -150) {
+    if (iterm > _ITERM_MAX || iterm < -_ITERM_MAX) {
       iterm = 0;
     }
 
